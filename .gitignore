@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Original g2o
+\build*
+\lib
+\bin
+\.vs
+\.vscode
+\.cache
