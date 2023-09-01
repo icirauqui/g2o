@@ -51,3 +51,5 @@ examples: 	Application examples. These dirs build executables
 apps: 		here are the main applications that use g2o. they
 		include a command line interface and a gui
 		application.
+		
+fea:		classes for finite element analysis.

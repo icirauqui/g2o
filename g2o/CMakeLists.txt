@@ -13,6 +13,9 @@ add_subdirectory(types)
 # Solvers
 add_subdirectory(solvers)
 
+# FEA
+add_subdirectory(fea)
+
 # Examples
 if(G2O_BUILD_EXAMPLES)
   add_subdirectory(examples)
