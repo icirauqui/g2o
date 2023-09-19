@@ -94,6 +94,53 @@ OptimizationAlgorithm::SolverResult OptimizationAlgorithmGaussNewton::solve(
     return Fail;
 }
 
+OptimizationAlgorithm::SolverResult OptimizationAlgorithmGaussNewton::solveFEA(
+    int iteration, bool online) {
+  assert(_solver.optimizer() == _optimizer &&
+         "underlying linear solver operates on different graph");
+  bool ok = true;
+
+  // here so that correct component for max-mixtures can be computed before the
+  // build structure
+  double t = get_monotonic_time();
+  _optimizer->computeActiveErrors();
+  G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
+  if (globalStats) {
+    globalStats->timeResiduals = get_monotonic_time() - t;
+  }
+
+  if (iteration == 0 &&
+      !online) {  // built up the CCS structure, here due to easy time measure
+    ok = _solver.buildStructure();
+    if (!ok) {
+      G2O_WARN("{}: Failure while building CCS structure", __PRETTY_FUNCTION__);
+      return OptimizationAlgorithm::Fail;
+    }
+  }
+
+  t = get_monotonic_time();
+  _solver.buildSystem();
+  if (globalStats) {
+    globalStats->timeQuadraticForm = get_monotonic_time() - t;
+    t = get_monotonic_time();
+  }
+
+  ok = _solver.solve();
+  if (globalStats) {
+    globalStats->timeLinearSolution = get_monotonic_time() - t;
+    t = get_monotonic_time();
+  }
+
+  _optimizer->update(_solver.x());
+  if (globalStats) {
+    globalStats->timeUpdate = get_monotonic_time() - t;
+  }
+  if (ok)
+    return OK;
+  else
+    return Fail;
+}
+
 void OptimizationAlgorithmGaussNewton::printVerbose(std::ostream& os) const {
   os << "\t schur= " << _solver.schur();
 }

@@ -41,9 +41,24 @@ io_helper.h
 g2o_core_api.h
 )
 
+
+
+find_package(PCL 1.12 REQUIRED)
+
+
+
+
+
 target_include_directories(core PUBLIC
   "$<BUILD_INTERFACE:${g2o_SOURCE_DIR};${PROJECT_BINARY_DIR}>"
   $<INSTALL_INTERFACE:include/g2o/core>
+  ${PCL_INCLUDE_DIRS}
+  ${VTKFIG_INCLUDE_DIRS}
+)
+
+link_directories(
+    ${PCL_LIBRARY_DIRS}
+    ${PCL_LIBRARY_DIRS}/..
 )
 
 set_target_properties(core PROPERTIES OUTPUT_NAME ${LIB_PREFIX}core)
@@ -52,6 +67,10 @@ set_target_properties(core PROPERTIES
   SOVERSION ${G2O_LIB_SOVERSION})
 target_link_libraries(core PUBLIC stuff ${G2O_EIGEN3_EIGEN_TARGET})
 target_link_libraries(core PUBLIC g2o_ceres_ad)
+target_link_libraries(core PUBLIC 
+                      ${VTK_LIBRARIES}
+                      ${PCL_LIBRARIES})
+                      
 target_compile_features(core PUBLIC cxx_std_17)
 
 if (APPLE)

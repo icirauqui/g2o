@@ -32,6 +32,11 @@
 #include "g2o_core_api.h"
 #include "optimization_algorithm_with_hessian.h"
 
+// icirauqui
+#include "../fea/fem.hpp"
+#include "../fea/fea.hpp"
+#include "../fea/pos.hpp"
+
 namespace g2o {
 
 /**
@@ -49,6 +54,7 @@ class G2O_CORE_API OptimizationAlgorithmLevenberg
   virtual ~OptimizationAlgorithmLevenberg();
 
   virtual SolverResult solve(int iteration, bool online = false);
+  virtual SolverResult solveFEA(int iteration, bool online = false);
 
   virtual void printVerbose(std::ostream& os) const;
 
@@ -72,6 +78,9 @@ class G2O_CORE_API OptimizationAlgorithmLevenberg
   //! return the number of levenberg iterations performed in the last round
   int levenbergIteration() { return _levenbergIterations; }
 
+  // icirauqui
+  void setFeaPtrs(FEM* fem1, FEM* fem2, FEA* fea, POS* pos);
+
  protected:
   // Levenberg parameters
   Property<int>* _maxTrialsAfterFailure;
@@ -87,6 +96,11 @@ class G2O_CORE_API OptimizationAlgorithmLevenberg
                              ///< to accept the last step
   // icirauqui
   int _nBad;
+  FEM* pfem1;
+  FEM* pfem2;
+  FEA* pfea;
+  POS* ppos;
+  bool bfea = false;
 
   /**
    * helper for Levenberg, this function computes the initial damping factor, if

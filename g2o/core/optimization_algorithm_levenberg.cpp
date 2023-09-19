@@ -70,6 +70,7 @@ OptimizationAlgorithmLevenberg::OptimizationAlgorithmLevenberg(
 
 OptimizationAlgorithmLevenberg::~OptimizationAlgorithmLevenberg() {}
 
+
 OptimizationAlgorithm::SolverResult OptimizationAlgorithmLevenberg::solve(
     int iteration, bool online) {
   assert(_optimizer && "_optimizer not set");
@@ -165,6 +166,105 @@ OptimizationAlgorithm::SolverResult OptimizationAlgorithmLevenberg::solve(
   return OK;
 }
 
+
+
+OptimizationAlgorithm::SolverResult OptimizationAlgorithmLevenberg::solveFEA(
+    int iteration, bool online) {
+  assert(_optimizer && "_optimizer not set");
+  assert(_solver.optimizer() == _optimizer &&
+         "underlying linear solver operates on different graph");
+
+  if (iteration == 0 &&
+      !online) {  // built up the CCS structure, here due to easy time measure
+    bool ok = _solver.buildStructure();
+    if (!ok) {
+      G2O_WARN("{}: Failure while building CCS structure", __PRETTY_FUNCTION__);
+      return OptimizationAlgorithm::Fail;
+    }
+  }
+
+  double t = get_monotonic_time();
+  _optimizer->computeActiveErrors();
+  G2OBatchStatistics* globalStats = G2OBatchStatistics::globalStats();
+  if (globalStats) {
+    globalStats->timeResiduals = get_monotonic_time() - t;
+    t = get_monotonic_time();
+  }
+
+  double currentChi = _optimizer->activeRobustChi2();
+
+  _solver.buildSystem();
+  if (globalStats) {
+    globalStats->timeQuadraticForm = get_monotonic_time() - t;
+  }
+
+  // core part of the Levenbarg algorithm
+  if (iteration == 0) {
+    _currentLambda = computeLambdaInit();
+    _ni = 2;
+  }
+
+  double rho = 0;
+  int& qmax = _levenbergIterations;
+  qmax = 0;
+  do {
+    _optimizer->push();
+    if (globalStats) {
+      globalStats->levenbergIterations++;
+      t = get_monotonic_time();
+    }
+    // update the diagonal of the system matrix
+    _solver.setLambda(_currentLambda, true);
+    bool ok2 = _solver.solve();
+    if (globalStats) {
+      globalStats->timeLinearSolution += get_monotonic_time() - t;
+      t = get_monotonic_time();
+    }
+    _optimizer->update(_solver.x());
+    if (globalStats) {
+      globalStats->timeUpdate = get_monotonic_time() - t;
+    }
+
+    // restore the diagonal
+    _solver.restoreDiagonal();
+
+    _optimizer->computeActiveErrors();
+    double tempChi = _optimizer->activeRobustChi2();
+
+    if (!ok2) tempChi = std::numeric_limits<double>::max();
+
+    rho = (currentChi - tempChi);
+    double scale =
+        ok2 ? computeScale() + cst(1e-3) : 1;  // make sure it's non-zero :)
+    rho /= scale;
+
+    if (rho > 0 && g2o_isfinite(tempChi) && ok2) {  // last step was good
+      double alpha = 1. - pow((2 * rho - 1), 3);
+      // crop lambda between minimum and maximum factors
+      alpha = (std::min)(alpha, _goodStepUpperScale);
+      double scaleFactor = (std::max)(_goodStepLowerScale, alpha);
+      _currentLambda *= scaleFactor;
+      _ni = 2;
+      currentChi = tempChi;
+      _optimizer->discardTop();
+    } else {
+      _currentLambda *= _ni;
+      _ni *= 2;
+      _optimizer->pop();  // restore the last state before trying to optimize
+      if (!g2o_isfinite(_currentLambda)) break;
+    }
+    qmax++;
+  } while (rho < 0 && qmax < _maxTrialsAfterFailure->value() &&
+           !_optimizer->terminate());
+
+  if (qmax == _maxTrialsAfterFailure->value() || rho == 0 ||
+      !g2o_isfinite(_currentLambda))
+    return Terminate;
+  return OK;
+}
+
+
+
 double OptimizationAlgorithmLevenberg::computeLambdaInit() const {
   if (_userLambdaInit->value() > 0) return _userLambdaInit->value();
   double maxDiagonal = 0;
@@ -201,5 +301,15 @@ void OptimizationAlgorithmLevenberg::printVerbose(std::ostream& os) const {
      << "\t lambda= " << FIXED(_currentLambda)
      << "\t levenbergIter= " << _levenbergIterations;
 }
+
+void OptimizationAlgorithmLevenberg::setFeaPtrs(FEM* fem1, FEM* fem2, FEA* fea, POS* pos) {
+  pfem1 = fem1;
+  pfem2 = fem2;
+  pfea = fea;
+  ppos = pos;
+  
+  bfea = true;
+}
+
 
 }  // namespace g2o

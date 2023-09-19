@@ -66,6 +66,14 @@ class StructureOnlySolver : public OptimizationAlgorithm {
     return calc(_points, 1);
   }
 
+  // icirauqui unmod
+  virtual OptimizationAlgorithm::SolverResult solveFEA(int iteration,
+                                                    bool online = false) {
+    (void)iteration;
+    (void)online;
+    return calc(_points, 1);
+  }
+
   OptimizationAlgorithm::SolverResult calc(
       OptimizableGraph::VertexContainer& vertices, int num_iters,
       int num_max_trials = 10) {

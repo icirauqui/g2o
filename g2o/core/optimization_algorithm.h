@@ -60,6 +60,7 @@ class G2O_CORE_API OptimizationAlgorithm {
    * @param iteration indicates the current iteration
    */
   virtual SolverResult solve(int iteration, bool online = false) = 0;
+  virtual SolverResult solveFEA(int iteration, bool online = false) = 0;
 
   /**
    * computes the block diagonal elements of the pattern specified in the input

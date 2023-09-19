@@ -379,6 +379,9 @@ void SparseOptimizer::computeInitialGuess(
 }
 
 int SparseOptimizer::optimize(int iterations, bool online) {
+  std::cout << "SparseOptimizer::optimize() iterations: " << iterations
+            << std::endl;
+
   if (_ivMap.size() == 0) {
     G2O_WARN(
         "{}: 0 vertices to optimize, maybe forgot to call "
@@ -386,6 +389,7 @@ int SparseOptimizer::optimize(int iterations, bool online) {
         __PRETTY_FUNCTION__);
     return -1;
   }
+
 
   int cjIterations = 0;
   double cumTime = 0;
@@ -413,7 +417,11 @@ int SparseOptimizer::optimize(int iterations, bool online) {
     }
 
     double ts = get_monotonic_time();
-    result = _algorithm->solve(i, online);
+    if (bfea) {
+      result = _algorithm->solveFEA(i, online);
+    } else {
+      result = _algorithm->solve(i, online);
+    }
     ok = (result == OptimizationAlgorithm::OK);
 
     bool errorComputed = false;
@@ -619,6 +627,15 @@ bool SparseOptimizer::addComputeErrorAction(HyperGraphAction* action) {
 
 bool SparseOptimizer::removeComputeErrorAction(HyperGraphAction* action) {
   return _graphActions[AT_COMPUTEACTIVERROR].erase(action) > 0;
+}
+
+void SparseOptimizer::setFeaPtrs(FEM* fem1, FEM* fem2, FEA* fea, POS* pos) {
+  pfem1 = fem1;
+  pfem2 = fem2;
+  pfea = fea;
+  ppos = pos;
+
+  bfea = true;
 }
 
 void SparseOptimizer::push() { push(_activeVertices); }

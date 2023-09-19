@@ -49,6 +49,9 @@ class G2O_CORE_API OptimizationAlgorithmGaussNewton
 
   virtual SolverResult solve(int iteration, bool online = false);
 
+  // icirauqui unmod
+  virtual SolverResult solveFEA(int iteration, bool online = false);
+
   virtual void printVerbose(std::ostream& os) const;
 
  private:

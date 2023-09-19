@@ -33,6 +33,11 @@
 #include "optimizable_graph.h"
 #include "sparse_block_matrix.h"
 
+// icirauqui
+#include "../fea/fem.hpp"
+#include "../fea/fea.hpp"
+#include "../fea/pos.hpp"
+
 namespace g2o {
 
 // forward declaration
@@ -284,6 +289,9 @@ class G2O_CORE_API SparseOptimizer : public OptimizableGraph {
   //! error vectors
   bool removeComputeErrorAction(HyperGraphAction* action);
 
+  // icirauqui
+  void setFeaPtrs(FEM* fem1, FEM* fem2, FEA* fea, POS* pos);
+
  protected:
   bool* _forceStopFlag;
   bool _verbose;
@@ -302,6 +310,13 @@ class G2O_CORE_API SparseOptimizer : public OptimizableGraph {
    */
   bool buildIndexMapping(SparseOptimizer::VertexContainer& vlist);
   void clearIndexMapping();
+
+  // icirauqui
+  FEM* pfem1;
+  FEM* pfem2;
+  FEA* pfea;
+  POS* ppos;
+  bool bfea = false;
 
   BatchStatisticsContainer
       _batchStatistics;  ///< global statistics of the optimizer, e.g., timing,

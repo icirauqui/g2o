@@ -1,3 +1,7 @@
+
+#ifndef POS_HPP
+#define POS_HPP
+
 #include <iostream>
 #include <vector>
 
@@ -66,3 +70,7 @@ private:
   std::vector<std::vector<Eigen::Vector3d>> points_;
   std::vector<std::pair<Eigen::Vector4d, Eigen::Vector3d>> pose_;
 };
+
+
+
+#endif

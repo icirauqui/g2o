@@ -1,5 +1,5 @@
-#ifndef FEA_H
-#define FEA_H
+#ifndef FEA_HPP
+#define FEA_HPP
 
 #include <iostream>
 #include <vector>
