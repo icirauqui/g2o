@@ -11,7 +11,7 @@ POS::POS(std::vector<Eigen::Vector3d> points,
 POS::POS(std::vector<std::vector<float>> points,
          std::pair<Eigen::Vector4d, Eigen::Vector3d> pose){
   std::vector<Eigen::Vector3d> eigen_points;
-  for (int i = 0; i < points.size(); i++) {
+  for (unsigned int i = 0; i < points.size(); i++) {
     eigen_points.push_back(Eigen::Vector3d(points[i][0], points[i][1], points[i][2]));
   }
   points_.push_back(eigen_points);
@@ -27,14 +27,14 @@ void POS::Transform(Eigen::Vector4d r_im,
 
   // Translate
   pose.second += t;
-  for (int i = 0; i < points.size(); i++) {
+  for (unsigned int i = 0; i < points.size(); i++) {
     points[i] += t;
   }
 
   // Rotate
   pose.first = ConcatenateQuaternions(pose.first, r_im);
   //Eigen::Vector4d r_pt = InvertQuaternion(r_im);
-  for (int i = 0; i < points.size(); i++) {
+  for (unsigned int i = 0; i < points.size(); i++) {
     points[i] -= pose.second;
     points[i] = QuaternionRotatePoint(r_im, points[i]);
     points[i] += pose.second;
@@ -42,7 +42,7 @@ void POS::Transform(Eigen::Vector4d r_im,
 
   // Scale
   pose.second *= s;
-  for (int i = 0; i < points.size(); i++) {
+  for (unsigned int i = 0; i < points.size(); i++) {
     points[i] -= pose.second;
     points[i] *= s;
     points[i] += pose.second;

@@ -9,28 +9,26 @@
 #include <bits/stdc++.h>
 #include <eigen3/Eigen/Dense>
 
-#include <pcl/io/pcd_io.h>
-#include <pcl/io/vtk_io.h>
-#include <pcl/point_types.h>
+//#include <pcl/io/pcd_io.h>
+//#include <pcl/io/vtk_io.h>
+//#include <pcl/point_types.h>
 
-#include <pcl/common/common.h>
-#include <pcl/features/normal_3d_omp.h>
-#include <pcl/surface/mls.h>
-#include <pcl/surface/impl/mls.hpp>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/visualization/cloud_viewer.h>
+//#include <pcl/common/common.h>
+//#include <pcl/features/normal_3d_omp.h>
+//#include <pcl/surface/mls.h>
+//#include <pcl/surface/impl/mls.hpp>
+//#include <pcl/kdtree/kdtree_flann.h>
+//#include <pcl/visualization/cloud_viewer.h>
 
-#include <pcl/common/common_headers.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/console/parse.h>
+//#include <pcl/common/common_headers.h>
+//#include <pcl/features/normal_3d.h>
+//#include <pcl/visualization/pcl_visualizer.h>
+//#include <pcl/console/parse.h>
 
-#include <pcl/surface/gp3.h>
-
-#include <pcl/visualization/vtk.h>
-
-#include <pcl/console/parse.h>
-#include <pcl/io/vtk_lib_io.h>
+//#include <pcl/surface/gp3.h>
+//#include <pcl/visualization/vtk.h>
+//#include <pcl/console/parse.h>
+//#include <pcl/io/vtk_lib_io.h>
 
 
 class FEA {
@@ -80,7 +78,8 @@ private:
   
   void ComputeKei(std::vector<std::vector<float>> &vfPts);
   
-  void dNdgs(float xi, float eta, float zeta, int dim);
+  //void dNdgs(float xi, float eta, float zeta, int dim);
+  void dNdgs(float xi, float eta, float zeta);
 
   int frame_id_ = 0;
   std::string element_;
@@ -103,7 +102,7 @@ private:
 
   float lambda_ = 0.0;
   float G_ = 0.0;
-  int base_size_ = 0;
+  unsigned int base_size_ = 0;
 
   Eigen::MatrixXf dndgs_;
   Eigen::Matrix3f J_;

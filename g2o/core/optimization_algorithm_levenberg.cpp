@@ -38,6 +38,20 @@ using namespace std;
 
 namespace g2o {
 
+OptimizationAlgorithmLevenberg::OptimizationAlgorithmLevenberg(Solver* solver) :
+    OptimizationAlgorithmWithHessian(solver)
+  {
+    _currentLambda = -1.;
+    _tau = 1e-5;
+    _goodStepUpperScale = 2./3.;
+    _goodStepLowerScale = 1./3.;
+    _userLambdaInit = _properties.makeProperty<Property<double> >("initialLambda", 0.);
+    _maxTrialsAfterFailure = _properties.makeProperty<Property<int> >("maxTrialsAfterFailure", 10);
+    _ni=2.;
+    _levenbergIterations = 0;
+    _nBad = 0;
+  }
+
 OptimizationAlgorithmLevenberg::OptimizationAlgorithmLevenberg(
     std::unique_ptr<Solver> solver)
     : OptimizationAlgorithmWithHessian(*solver.get()),

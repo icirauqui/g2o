@@ -44,6 +44,7 @@ class G2O_CORE_API OptimizationAlgorithmLevenberg
    * construct the Levenberg algorithm, which will use the given Solver for
    * solving the linearized system.
    */
+  explicit OptimizationAlgorithmLevenberg(Solver* solver);
   explicit OptimizationAlgorithmLevenberg(std::unique_ptr<Solver> solver);
   virtual ~OptimizationAlgorithmLevenberg();
 
@@ -84,6 +85,8 @@ class G2O_CORE_API OptimizationAlgorithmLevenberg
   double _ni;
   int _levenbergIterations;  ///< the number of levenberg iterations performed
                              ///< to accept the last step
+  // icirauqui
+  int _nBad;
 
   /**
    * helper for Levenberg, this function computes the initial damping factor, if

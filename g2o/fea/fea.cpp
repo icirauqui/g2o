@@ -202,7 +202,8 @@ void FEA::ComputeKei(std::vector<std::vector<float>> &vfPts) {
     float eta  = gs_(ops, 1);
     float zeta = gs_(ops, 2);
 
-    dNdgs(xi, eta, zeta, base_size_);
+    //dNdgs(xi, eta, zeta, base_size_);
+    dNdgs(xi, eta, zeta);
 
     // Compute Jacobian
     J_ = dndgs_.transpose() * vFpts;
@@ -236,10 +237,11 @@ void FEA::ComputeKei(std::vector<std::vector<float>> &vfPts) {
 }
 
 
-void FEA::dNdgs(float xi, float eta, float zeta, int dim) {
+//void FEA::dNdgs(float xi, float eta, float zeta, int dim) {
+void FEA::dNdgs(float xi, float eta, float zeta) {
   // Col 0 = dN/dgs(0,0), Col 1 = dN/dgs(0,1), Col 2 = dN/dgs(0,2)
 
-  float fact = 1.0 / dim;
+  //float fact = 1.0 / dim;
 
   if (element_ == "C3D6") {
     dndgs_(0,0) = -(1 + zeta)/2;    dndgs_(0,1) = -(1 + zeta)/2;    dndgs_(0,2) =  (1-xi-eta)/2;

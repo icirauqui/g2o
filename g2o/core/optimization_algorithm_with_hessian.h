@@ -41,6 +41,7 @@ class Solver;
 class G2O_CORE_API OptimizationAlgorithmWithHessian
     : public OptimizationAlgorithm {
  public:
+  explicit OptimizationAlgorithmWithHessian(Solver* solver);
   explicit OptimizationAlgorithmWithHessian(Solver& solver);
   virtual ~OptimizationAlgorithmWithHessian();
 

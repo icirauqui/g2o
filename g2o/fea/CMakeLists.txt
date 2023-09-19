@@ -24,7 +24,7 @@ add_definitions(
 )
 
 
-add_library(fea
+add_library(fea ${G2O_LIB_TYPE}
     pos.cpp
     pos.hpp
     fem.cpp
@@ -33,8 +33,29 @@ add_library(fea
     fea.hpp
 )
 
-
-target_link_libraries(fea
-  ${VTK_LIBRARIES}
-  ${PCL_LIBRARIES}
+target_include_directories(fea PUBLIC
+  "$<BUILD_INTERFACE:${g2o_SOURCE_DIR};${PROJECT_BINARY_DIR}>"
+  $<INSTALL_INTERFACE:include/g2o/fea>
 )
+
+set_target_properties(fea PROPERTIES OUTPUT_NAME ${LIB_PREFIX}fea)
+set_target_properties(fea PROPERTIES
+  VERSION ${G2O_LIB_VERSION}
+  SOVERSION ${G2O_LIB_SOVERSION})
+target_link_libraries(fea PUBLIC 
+    ${G2O_EIGEN3_EIGEN_TARGET}
+    ${VTK_LIBRARIES}
+    ${PCL_LIBRARIES})
+target_compile_features(fea PUBLIC cxx_std_17)
+
+install(TARGETS fea
+  EXPORT ${G2O_TARGETS_EXPORT_NAME}
+  RUNTIME DESTINATION ${RUNTIME_DESTINATION}
+  LIBRARY DESTINATION ${LIBRARY_DESTINATION}
+  ARCHIVE DESTINATION ${ARCHIVE_DESTINATION}
+  INCLUDES DESTINATION ${INCLUDES_DESTINATION}
+)
+
+file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
+
+install(FILES ${headers} DESTINATION ${INCLUDES_INSTALL_DIR}/fea)

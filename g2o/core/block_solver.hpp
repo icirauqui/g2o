@@ -37,6 +37,31 @@
 
 namespace g2o {
 
+
+template <typename Traits>
+BlockSolver<Traits>::BlockSolver(LinearSolverType* linearSolver) :
+  BlockSolverBase(),
+  _linearSolver(linearSolver)
+{
+  // workspace
+  _Hpp=0;
+  _Hll=0;
+  _Hpl=0;
+  _HplCCS = 0;
+  _HschurTransposedCCS = 0;
+  _Hschur=0;
+  _DInvSchur=0;
+  _coefficients=0;
+  _bschur = 0;
+  _xSize=0;
+  _numPoses=0;
+  _numLandmarks=0;
+  _sizePoses=0;
+  _sizeLandmarks=0;
+  _doSchur=true;
+}
+
+
 template <typename Traits>
 BlockSolver<Traits>::BlockSolver(std::unique_ptr<LinearSolverType> linearSolver)
     : BlockSolverBase(), _linearSolver(std::move(linearSolver)) {

@@ -121,6 +121,7 @@ class BlockSolver : public BlockSolverBase {
    * NOTE: The BlockSolver assumes exclusive access to the linear solver and
    * will therefore free the pointer in its destructor.
    */
+  BlockSolver(LinearSolverType* linearSolver);
   BlockSolver(std::unique_ptr<LinearSolverType> linearSolver);
   ~BlockSolver();
 

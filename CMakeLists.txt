@@ -526,8 +526,10 @@ if(BUILD_UNITTESTS)
   add_subdirectory(unit_test)
 endif()
 
-# Include the subdirectories
+
+#add_library(g2o SHARED fea.so)
 add_subdirectory(g2o)
+
 
 # Benchmarks
 option(G2O_BUILD_BENCHMARKS "build benchmarks" OFF)

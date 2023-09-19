@@ -523,7 +523,7 @@ std::pair<Eigen::Vector3d, Eigen::Vector3d> FEM::QuaternionLine(
   Eigen::Quaterniond q(qvec(0), qvec(1), qvec(2), qvec(3));
   Eigen::Matrix3d rotation_matrix = q.normalized().toRotationMatrix();
 
-  Eigen::Vector3d reference_vector(1.0, 0.0, 0.0);
+  Eigen::Vector3d reference_vector(radius, 0.0, 0.0);
 
   Eigen::Vector3d direction = rotation_matrix * reference_vector;
   direction.normalize();
